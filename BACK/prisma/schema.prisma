@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum user_rol {
+  USER
+  ADMIN
+}
+
+model user {
+  id         Int      @id @default(autoincrement())
+  persona_id Int      @unique
+  username   String   @unique
+  password   String
+  rol        user_rol @default(USER)
+
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @updatedAt @db.DateTime(0)
+
+  persona persona @relation(fields: [persona_id], references: [id])
+}
+
+model tipo_identificacion {
+  id      Int       @id @default(autoincrement())
+  nombre  String
+  persona persona[]
+}
+
+model persona {
+  id                    Int    @id @default(autoincrement())
+  nombre                String
+  apellido              String
+  tipo_id               Int
+  numero_identificacion String @unique
+
+  cita                cita[]
+  user                user?
+  tipo_identificacion tipo_identificacion @relation(fields: [tipo_id], references: [id])
+}
+
+model medico {
+  id       Int    @id @default(autoincrement())
+  nombre   String
+  apellido String
+
+  cita    cita[]
+  horario horario[]
+}
+
+model cita {
+  id         Int      @id @default(autoincrement())
+  persona_id Int?
+  medico_id  Int
+  fecha      DateTime @db.DateTime(0)
+  estado_id  Int
+
+  persona     persona?    @relation(fields: [persona_id], references: [id])
+  medico      medico?     @relation(fields: [medico_id], references: [id])
+  cita_estado cita_estado @relation(fields: [estado_id], references: [id])
+}
+
+model cita_estado {
+  id     Int    @id @default(autoincrement())
+  nombre String
+  cita   cita[]
+}
+
+model horario {
+  id          Int      @id @default(autoincrement())
+  medico      medico   @relation(fields: [medico_id], references: [id])
+  medico_id   Int
+  fechaInicio DateTime @db.DateTime(0)
+  fechaFin    DateTime @db.DateTime(0)
+}

@@ -1,0 +1,15 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  user-select: none;
+}
+
+.content_app {
+  padding: 0 100px !important;
+}
+
+@media (max-width: 900px) {
+  .content_app {
+    padding: 0px 5px !important;
+  }
+}
